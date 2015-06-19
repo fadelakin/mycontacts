@@ -1,9 +1,11 @@
 package com.fisheradelakin.mycontacts;
 
+import java.io.Serializable;
+
 /**
  * Created by Fisher on 6/19/15.
  */
-public class Contact {
+public class Contact implements Serializable {
 
     private String mName;
 
