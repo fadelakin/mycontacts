@@ -17,14 +17,15 @@ import java.util.ArrayList;
 
 public class ContactListActivity extends AppCompatActivity {
 
-    private ArrayList<Contact> mContacts;
+    private ContactList mContacts;
+    private ContactAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact_list);
 
-        mContacts = new ArrayList<>();
+        mContacts = ContactList.getInstance();
 
         for (int i = 0; i < 30; i++) {
             Contact contact1 = new Contact();
@@ -39,7 +40,8 @@ public class ContactListActivity extends AppCompatActivity {
         }
 
         ListView listView = (ListView) findViewById(R.id.contact_list_view);
-        listView.setAdapter(new ContactAdapter(mContacts));
+        mAdapter = new ContactAdapter(mContacts);
+        listView.setAdapter(mAdapter);
 
         // quick return to make the action bar go away when scrolling down and return when scrolling up
         listView.setOnScrollListener(new AbsListView.OnScrollListener() {
@@ -64,9 +66,8 @@ public class ContactListActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Contact contact = mContacts.get(position);
                 Intent i = new Intent(ContactListActivity.this, ContactViewActivity.class);
-                i.putExtra(ContactViewActivity.EXTRA, contact);
+                i.putExtra(ContactViewActivity.EXTRA, position);
                 startActivity(i);
             }
         });
@@ -88,6 +89,13 @@ public class ContactListActivity extends AppCompatActivity {
 
             return convertView;
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        mAdapter.notifyDataSetChanged();
     }
 
     @Override
