@@ -30,9 +30,8 @@ public class ContactViewActivity extends AppCompatActivity {
         int width = point.x;
         int height = point.y;
 
-        ImageView iv = (ImageView) findViewById(R.id.contact_view_image);
-        iv.setLayoutParams(new RelativeLayout.LayoutParams(width, (int) (width * (9.0/16.0))));
-        Log.d(TAG, "New height is: " + iv.getLayoutParams().height);
+        RelativeLayout headerSection = (RelativeLayout) findViewById(R.id.contact_view_header);
+        headerSection.setLayoutParams(new RelativeLayout.LayoutParams(width, (int) (width * (9.0/16.0))));
 
         Contact contact = (Contact) getIntent().getSerializableExtra(EXTRA);
         TextView contactName = (TextView) findViewById(R.id.contact_view_name);
