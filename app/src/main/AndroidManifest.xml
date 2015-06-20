@@ -18,7 +18,8 @@
         </activity>
         <activity
             android:name=".ContactViewActivity"
-            android:label="@string/title_activity_contact_view" >
+            android:label="@string/title_activity_contact_view"
+            android:theme="@style/NoActionBar">
         </activity>
     </application>
 

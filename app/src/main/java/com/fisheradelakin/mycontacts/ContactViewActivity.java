@@ -3,6 +3,7 @@ package com.fisheradelakin.mycontacts;
 import android.graphics.Point;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
@@ -36,6 +37,9 @@ public class ContactViewActivity extends AppCompatActivity {
         Contact contact = (Contact) getIntent().getSerializableExtra(EXTRA);
         TextView contactName = (TextView) findViewById(R.id.contact_view_name);
         contactName.setText(contact.getName());
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.contact_view_toolbar);
+        toolbar.inflateMenu(R.menu.menu_contact_view);
     }
 
     @Override
