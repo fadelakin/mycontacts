@@ -1,8 +1,11 @@
 package com.fisheradelakin.mycontacts;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Display;
@@ -23,6 +26,8 @@ public class ContactViewActivity extends AppCompatActivity {
 
     public static final String EXTRA = "CVA_Contact";
     private static final String TAG = "ContactViewActivity";
+
+    private int mColor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +66,11 @@ public class ContactViewActivity extends AppCompatActivity {
 
         ListView listView = (ListView) findViewById(R.id.contact_view_fields);
         listView.setAdapter(new FieldsAdapter(contact.phoneNumbers, contact.emails));
+
+        // get color palette from image
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.dope);
+        Palette palette = Palette.from(bitmap).generate();
+        mColor = palette.getVibrantSwatch().getRgb();
     }
 
     private class FieldsAdapter extends BaseAdapter {
@@ -103,7 +113,26 @@ public class ContactViewActivity extends AppCompatActivity {
             TextView contactValue = (TextView) convertView.findViewById(R.id.contact_view_row_value);
             contactValue.setText(value);
 
+            ImageView iv = (ImageView) convertView.findViewById(R.id.field_icon);
+            if(isFirst(position)){
+                if(isEmail(position)) {
+                    iv.setImageResource(R.drawable.ic_email);
+                } else {
+                    iv.setImageResource(R.drawable.ic_call);
+                }
+            }
+
+            // change color of icons
+            iv.setColorFilter(mColor);
+
             return convertView;
+        }
+
+        private boolean isFirst(int position) {
+            if(position == 0 || position == phoneNumbers.size()) {
+                return true;
+            }
+            return false;
         }
 
         private boolean isEmail(int position) {

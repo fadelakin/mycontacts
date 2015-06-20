@@ -43,6 +43,8 @@
 
     <ListView
         android:id="@+id/contact_view_fields"
+        android:paddingRight="@dimen/vertical_small_margin"
+        android:paddingLeft="@dimen/vertical_small_margin"
         android:layout_weight="100"
         android:layout_width="match_parent"
         android:layout_height="0dp"/>
