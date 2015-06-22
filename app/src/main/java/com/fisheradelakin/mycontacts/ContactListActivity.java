@@ -1,122 +1,57 @@
 package com.fisheradelakin.mycontacts;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
+import android.support.v7.app.AppCompatActivity;
 
-import java.util.ArrayList;
+public class ContactListActivity extends AppCompatActivity
+        implements ContactListFragment.Contract, ContactViewFragment.Contract {
 
-public class ContactListActivity extends AppCompatActivity {
-
-    private ContactList mContacts;
-    private ContactAdapter mAdapter;
+    private ContactListFragment mContactListFragment;
+    private ContactViewFragment mContactViewFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact_list);
 
-        mContacts = ContactList.getInstance();
+        mContactListFragment = (ContactListFragment) getFragmentManager().findFragmentById(R.id.list_fragment_container);
 
-        for (int i = 0; i < 30; i++) {
-            Contact contact1 = new Contact();
-            contact1.setName("Fisher Adelakin");
-            contact1.emails = new ArrayList<String>();
-            contact1.emails.add("temidayoadelakin@gmail.com");
-            contact1.emails.add("temidayoadelakin@me.com");
-            contact1.phoneNumbers = new ArrayList<String>();
-            contact1.phoneNumbers.add("555-555-5555");
-            contact1.phoneNumbers.add("123-456-7890");
-            mContacts.add(contact1);
+        if(mContactListFragment == null) {
+            mContactListFragment = new ContactListFragment();
+            getFragmentManager().beginTransaction()
+                    .add(R.id.list_fragment_container, mContactListFragment)
+                    .commit();
         }
 
-        ListView listView = (ListView) findViewById(R.id.contact_list_view);
-        mAdapter = new ContactAdapter(mContacts);
-        listView.setAdapter(mAdapter);
+        // coupling for tablets
+        mContactViewFragment = (ContactViewFragment) getFragmentManager().findFragmentById(R.id.view_fragment_container);
 
-        // quick return to make the action bar go away when scrolling down and return when scrolling up
-        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
-            int previousFirstItem = 0;
-            @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-
-            }
-
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                if(firstVisibleItem > previousFirstItem) {
-                    getSupportActionBar().hide();
-                } else if(firstVisibleItem < previousFirstItem) {
-                    getSupportActionBar().show();
-                }
-
-                previousFirstItem = firstVisibleItem;
-            }
-        });
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent i = new Intent(ContactListActivity.this, ContactViewActivity.class);
-                i.putExtra(ContactViewActivity.EXTRA, position);
-                startActivity(i);
-            }
-        });
-    }
-
-    private class ContactAdapter extends ArrayAdapter<Contact> {
-        ContactAdapter(ArrayList<Contact> contacts) {
-            super(ContactListActivity.this, R.layout.contact_list_row, R.id.contact_row_name, contacts);
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            convertView = super.getView(position, convertView, parent);
-
-            Contact contact = getItem(position);
-
-            TextView nameTextView = (TextView) convertView.findViewById(R.id.contact_row_name);
-            nameTextView.setText(contact.getName());
-
-            return convertView;
+        if(mContactViewFragment == null && findViewById(R.id.view_fragment_container) != null) {
+            mContactViewFragment = new ContactViewFragment();
+            mContactViewFragment.setPosition(0);
+            getFragmentManager().beginTransaction()
+                    .add(R.id.view_fragment_container, mContactViewFragment)
+                    .commit();
         }
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-
-        mAdapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_contact_list, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+    public void selectedPosition(int position) {
+        if(mContactViewFragment == null) {
+            Intent i = new Intent(this, ContactViewActivity.class);
+            i.putExtra(ContactViewActivity.EXTRA, position);
+            startActivity(i);
+        } else {
+            // we're in tablet mode
+            mContactViewFragment.setPosition(position);
         }
+    }
 
-        return super.onOptionsItemSelected(item);
+    @Override
+    public void selectEditPosition(int position) {
+        Intent i = new Intent(this, ContactEditActivity.class);
+        i.putExtra(ContactEditActivity.EXTRA, position);
+        startActivity(i);
     }
 }
